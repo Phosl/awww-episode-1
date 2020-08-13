@@ -1,64 +1,50 @@
-import React, { useEffect, useState }  from 'react'
-import { NavLink, withRouter } from 'react-router-dom'
-import { ReactComponent as UpArrow } from '../assets/up-arrow-circle.svg'
-import gsap from 'gsap'
+import React, { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
+import { withRouter } from "react-router-dom";
+import { ReactComponent as UpArrow } from "../assets/up-arrow-circle.svg";
+import { openMenu, closeMenu } from "../animations/menuAnimations";
 
-let tl = gsap.timeline()
+// Define reducer
 
-const Header = ({history,dimensions}) => {
+const Header = ({ history, dimensions }) => {
   const [menuState, setMenuState] = useState({ menuOpened: false });
-
   useEffect(() => {
-
+    //Listening for page changes.
     history.listen(() => {
-      setMenuState({menuOpened: false})
-    })
-
+      setMenuState({ menuOpened: false });
+    });
     if (menuState.menuOpened === true) {
-      // Run Open menu animation
-      gsap.to("nav", { css: { display: "block" } });
-      gsap.to("body", { css: { overflow: "hidden" } });
-      tl.to('.App', 1, {
-        y:  dimensions.width <= 654 ? '70vh' : dimensions.height / 2,
-        ease: 'expo.inOut'
-      }).to('.hamburger-menu span', .6,{
-        delay:-1,
-        scaleX:0,
-        transformOrigin: '50% 0%'
-      })
-
-    } else {
-      // Run Close menu animation
-      tl.to('.App', 1, {
-        y:  0,
-        ease: 'expo.inOut',
-      }).to('nav',{css:{display:'none'}}).to('body',{css:{overflow:'auto'}})
+      openMenu(dimensions.width);
+    } else if (menuState.menuOpened === false) {
+      closeMenu();
     }
-  },[dimensions.height, dimensions.width, history, menuState.menuOpened])
+  });
+
   return (
-    <div className="header">
-      <div className="container">
-        <div className="row v-center space-between">
-          <div className="logo">
-            <NavLink to="/">AGENCY</NavLink>
+    <div className='header'>
+      <div className='container'>
+        <div className='row v-center space-between'>
+          <div className='logo'>
+            <NavLink to='/' exact>
+              AGENCY
+            </NavLink>
           </div>
-          <div className="nav-toggle">
-            <div className="hamburger-menu"
+          <div className='nav-toggle'>
+            <div
               onClick={() => setMenuState({ menuOpened: true })}
-            >
+              className='hamburger-menu'>
               <span></span>
               <span></span>
             </div>
-            <div className="hamburger-menu-close"
-              onClick={() => setMenuState({ menuOpened: false })}
-            >
+            <div
+              className='hamburger-menu-close'
+              onClick={() => setMenuState({ menuOpened: false })}>
               <UpArrow />
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
-}
-
-export default withRouter(Header) 
+  );
+};
+export default withRouter(Header);

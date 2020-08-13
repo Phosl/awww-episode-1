@@ -1,83 +1,69 @@
-import React, { useEffect, useState } from 'react'
-import gsap from 'gsap'
-import { Route } from 'react-router-dom'
-import './styles/App.css'
-import Header from './components/header'
+import React, { useEffect } from "react";
+import { Route } from "react-router-dom";
+import { gsap } from "gsap";
+import "./styles/App.scss";
+import Header from "./components/header";
+import Navigation from "./components/navigation";
 
-//components
-import Home from './pages/home'
-import CaseStudies from './pages/caseStudies'
-import Approach from './pages/approach'
-import Services from './pages/services'
-import About from './pages/about'
-import Navigation from './components/navigation'
+import CaseStudies from "./pages/caseStudies";
+import Approach from "./pages/approach";
+import Services from "./pages/services";
+import About from "./pages/about";
+import Home from "./pages/home";
 
-// Routes
 const routes = [
-  { path: '/', name: 'Home', Component: Home },
-  { path: '/case-studies', name: 'Case Studies', Component: CaseStudies },
-  { path: '/approach', name: 'Approach', Component: Approach },
-  { path: '/services', name: 'Services', Component: Services },
-  { path: '/about-us', name: 'About us', Component: About },
-]
+  { path: "/", name: "Home", Component: Home },
+  { path: "/case-studies", name: "caseStudies", Component: CaseStudies },
+  { path: "/approach", name: "approach", Component: Approach },
+  { path: "/services", name: "services", Component: Services },
+  { path: "/about-us", name: "about", Component: About }
+];
 
-function debounce(fn,ms) {
+function debounce(fn, ms) {
   let timer;
   return () => {
     clearTimeout(timer);
-    timer = setTimeout(()=>{
+    timer = setTimeout(() => {
       timer = null;
-      fn.apply(this,arguments);
-    },ms);
-  }
+      fn.apply(this, arguments);
+    }, ms);
+  };
 }
 
-
-const App = () => {
-  //prevent flashing
-  gsap.set('body', { css: { visibility: 'visible' } })
-
-
-// Dimensions
-  const [dimensions, setDimensions] = useState({
+function App() {
+  const [dimensions, setDimensions] = React.useState({
     height: window.innerHeight,
     width: window.innerWidth
-  })
+  });
 
   useEffect(() => {
-    let vh = dimensions.height * 0.01
-    document.documentElement.style.setProperty('--vh', `${vh}px`)
-    const debounceHandleResize = debounce(function HandleResize(){
+    // prevents flashing
+    gsap.to("body", 0, { css: { visibility: "visible" } });
+    const debouncedHandleResize = debounce(function handleResize() {
       setDimensions({
         height: window.innerHeight,
         width: window.innerWidth
-      })
-    },1000)
+      });
+    }, 1000);
 
-    window.addEventListener('resize', debounceHandleResize)
-
+    window.addEventListener("resize", debouncedHandleResize);
     return () => {
-      window.removeEventListener('resize', debounceHandleResize)
-    }
-
+      window.removeEventListener("resize", debouncedHandleResize);
+    };
   });
-
-console.log(dimensions.width)
   return (
     <>
       <Header dimensions={dimensions} />
-     
-      <div className="App">
+      <div className='App'>
         {routes.map(({ path, Component }) => (
           <Route key={path} exact path={path}>
-            <Component />
+            <Component dimensions={dimensions} />
           </Route>
         ))}
       </div>
       <Navigation />
-
     </>
-  )
+  );
 }
 
-export default App
+export default App;
